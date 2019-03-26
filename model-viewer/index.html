@@ -38,6 +38,15 @@
 			a {
 				color: #ffffff;
 			}
+
+			/* span { border-radius: 2px; color: white; display: inline-block; min-width: 140px; padding: 4px; } */
+			span.id { background-color: #36A; }
+			span.id2 { background-color: #63A; }
+			span.id3 { background-color: #A36; min-width: 100px; }
+			span.type { background-color: #A63; }
+			span.color { background-color: black; }
+			/* li { list-style-type: square;} */
+
 		</style>
 	</head>
 	<body>
@@ -56,6 +65,7 @@
 		<script src="js/ColladaLoader.js"></script>
 		<script src="js/WebGL.js"></script>
 		<script src="js/stats.min.js"></script>
+		<script src="js/dat.gui.min.js"></script>
 
 		<script>
 
@@ -66,7 +76,11 @@
 			}
 
 			var container, stats, clock;
-			var camera, scene, renderer, elf;
+			var camera, scene, renderer, mdl;
+
+			var params = {
+				file: ''
+			}
 
 			init();
 			animate();
@@ -87,18 +101,18 @@
 
 				var loadingManager = new THREE.LoadingManager( function () {
 
-					scene.add( elf );
+					scene.add( mdl );
 
 				} );
 
 				// collada
 
-				var loader = new THREE.ColladaLoader( loadingManager );
-				loader.load( './model/tumor.dae', function ( collada ) {
-
-					elf = collada.scene;
-
-				} );
+				// var loader = new THREE.ColladaLoader( loadingManager );
+				// loader.load( './model/tumor.dae', function ( collada ) {
+				//
+				// 	mdl = collada.scene;
+				//
+				// } );
 
 				//
 
@@ -120,6 +134,23 @@
 
 				stats = new Stats();
 				container.appendChild( stats.dom );
+
+				// dat.GUI
+
+				var gui = new dat.GUI( { width: 300 } );
+
+				gui.add(params, 'file').onFinishChange( function(){
+					// refresh based on the new value
+					scene.remove( mdl );
+
+					var loader = new THREE.ColladaLoader( loadingManager );
+					loader.load( './model/' + params.file, function ( collada ) {
+
+						mdl = collada.scene;
+
+					} );
+
+				})
 
 				//
 
@@ -149,9 +180,9 @@
 
 				var delta = clock.getDelta();
 
-				if ( elf !== undefined ) {
+				if ( mdl !== undefined ) {
 
-					elf.rotation.z += delta * 0.5;
+					mdl.rotation.z += delta * 0.5;
 
 				}
 
@@ -160,5 +191,6 @@
 			}
 
 		</script>
+
 	</body>
 </html>
